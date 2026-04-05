@@ -19,76 +19,76 @@ RGB-D feature-based visual SLAM system in C++. Uses ORB features to track frames
 ## Approach
 
 ```
-                                                                  +--------------------+
-                                                                  |     New Frame      |
-                                                                  |  (RGB-D + ORB)     |
-                                                                  +---------+----------+
-                                                                            |
-                                                                            v
-                                                            +------------------------------+
-                                                            | 1. TRACKING AGAINST          |
-                                                            |    LOCAL MAP                 |
-                                                            |------------------------------|
-                                                            | Constant velocity prediction |
-                                                            |             |                |
-                                                            |             v                |
-                                                            |   Match last-KF map points   |
-                                                            | (project + descriptor match) |
-                                                            |             |                |
-                                                            |             v                |
-                                                            |  AP3P + RANSAC -> Motion-BA  |
-                                                            |             |                |
-                                                            |             v                |
-                                                            | Match local-map map points   |
-                                                            |      (covisibility graph)    |
-                                                            |             |                |
-                                                            |             v                |
-                                                            |       Final Motion-BA        |
-                                                            +-------------+----------------+
-                                                                          |
-                                                                    New keyframe?
-                                                                    /             \
-                                                                  No                 Yes
-                                                                  |                   |
-                                                                  v                   v
-                                                            Next frame   +-------------------------+
-                                                                          |    2. LOCAL MAPPING     |
-                                                                          |-------------------------|
-                                                                          |   tracked map points    |
-                                                                          | observation association |
-                                                                          |           |             |
-                                                                          |           v             |
-                                                                          | new map points creation |
-                                                                          |           |             |
-                                                                          |           v             |
-                                                                          |   covisibility graph    |
-                                                                          |        update           |
-                                                                          |           |             |
-                                                                          |           v             |
-                                                                          |    map points culling   |
-                                                                          +-----------+-------------+
-                                                                                      |
-                                                                                      v
-                                                                          +----------------------+
-                                                                          | 3. LOCAL BA          |
-                                                                          |----------------------|
-                                                                          | Factor graph:        |
-                                                                          | covisible KFs        |
-                                                                          | + points             | 
-                                                                          | + fixed neighbors    |
-                                                                          |          |           |
-                                                                          |          v           |
-                                                                          | Levenberg-Marquardt  |
-                                                                          | optimization         |
-                                                                          +-----------+----------+
-                                                                                      |
-                                                                                      v
-                                                                          +---------------------+
-                                                                          | 4. PGO (TODO)       |
-                                                                          |---------------------|
-                                                                          | Loop closure +      |
-                                                                          | global pose graph   |
-                                                                          +---------------------+
+                                              +--------------------+
+                                              |     New Frame      |
+                                              |  (RGB-D + ORB)     |
+                                              +---------+----------+
+                                                        |
+                                                        v
+                                        +------------------------------+
+                                        | 1. TRACKING AGAINST          |
+                                        |    LOCAL MAP                 |
+                                        |------------------------------|
+                                        | Constant velocity prediction |
+                                        |             |                |
+                                        |             v                |
+                                        |   Match last-KF map points   |
+                                        | (project + descriptor match) |
+                                        |             |                |
+                                        |             v                |
+                                        |  AP3P + RANSAC -> Motion-BA  |
+                                        |             |                |
+                                        |             v                |
+                                        | Match local-map map points   |
+                                        |      (covisibility graph)    |
+                                        |             |                |
+                                        |             v                |
+                                        |       Final Motion-BA        |
+                                        +-------------+----------------+
+                                                      |
+                                                New keyframe?
+                                                /             \
+                                              No                 Yes
+                                              |                   |
+                                              v                   v
+                                        Next frame   +-------------------------+
+                                                      |    2. LOCAL MAPPING     |
+                                                      |-------------------------|
+                                                      |   tracked map points    |
+                                                      | observation association |
+                                                      |           |             |
+                                                      |           v             |
+                                                      | new map points creation |
+                                                      |           |             |
+                                                      |           v             |
+                                                      |   covisibility graph    |
+                                                      |        update           |
+                                                      |           |             |
+                                                      |           v             |
+                                                      |    map points culling   |
+                                                      +-----------+-------------+
+                                                                  |
+                                                                  v
+                                                      +----------------------+
+                                                      | 3. LOCAL BA          |
+                                                      |----------------------|
+                                                      | Factor graph:        |
+                                                      | covisible KFs        |
+                                                      | + points             | 
+                                                      | + fixed neighbors    |
+                                                      |          |           |
+                                                      |          v           |
+                                                      | Levenberg-Marquardt  |
+                                                      | optimization         |
+                                                      +-----------+----------+
+                                                                  |
+                                                                  v
+                                                      +---------------------+
+                                                      | 4. PGO (TODO)       |
+                                                      |---------------------|
+                                                      | Loop closure +      |
+                                                      | global pose graph   |
+                                                      +---------------------+
 ```
 
 
